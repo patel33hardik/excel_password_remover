@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/frontend/static/index.css">
+    </head>
+    <body>
+        <form>
+            <input type="file" id="FileUploader">
+            <p id="FileName">Drag your files here or click in this area.</p><br>
+            <button type="button" id="SubmitButton" disabled>Upload</button>
+            <span id="fileError" style="color: red;"></span><br>
+        </form>
+
+        <script>
+            document.getElementById('FileUploader').addEventListener('click', function () {
+                const file = this.files[0];
+                const file_error =  document.getElementById('fileError');
+                const upload_button = document.getElementById('SubmitButton');
+                document.getElementById('FileName').textContent = file.name;
+                file_error.textContent = '';
+                if (file) {
+                    if (!file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                        file_error.textContent = 'Invalid file format. Must be required excel file';
+                        upload_button.disabled = true;
+                    } else if (file.size > 5 * 1024 * 1024) {
+                        file_error.textContent = 'Make sure file size less than 5 Mb';
+                        upload_button.disabled = true;
+                    } else {
+                        upload_button.disabled = false;
+                    }
+                } else {
+                    upload_button.disabled = true;
+                }
+            });
+
+            function uploadFile(file) {
+                const form_data = new FormData();
+                form_data.append('file', file);
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload', true);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        
+                    } else {
+                        console.error('File upload failed');
+                    }
+                }
+            }
+
+
+        </script>
+    </body>
+</html>
