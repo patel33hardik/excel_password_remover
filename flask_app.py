@@ -1,7 +1,6 @@
-# A very simple Flask Hello World app for you to get started with...
-
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import os
+from REP import removePassword
 
 app = Flask(
     __name__,
@@ -17,27 +16,28 @@ def hello_world():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    print('----------test-{}------'.format(request.files))
     if 'file' not in request.files:
         return jsonify({
             'Result': 'ERROR',
-            'Message': 'No file part'
-        })
+            'Message': 'File not found'
+        }), 400
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({
             'Result': 'ERROR',
-            'Message': 'No selected file'
-        })
+            'Message': 'File name not found'
+        }), 400
+
     if file:
-        import_path = os.path.join(
-            'import', file.filename
-        )
+        if not os.path.exists('import'):
+            os.makedirs('import')
+
+        import_path = os.path.join('import', file.filename)
         file.save(import_path)
-        return jsonify({
-            'Result': 'OK',
-            'Message': 'File uploaded successfully'
-        })
+        export_file = removePassword('import', 'export')
+
+        return send_file(export_file, as_attachment=True)
 
 
 if __name__ == '__main__':

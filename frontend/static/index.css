@@ -47,7 +47,8 @@ form button {
     outline: none;
 }
 
-form button:hover {
+form button:hover,
+form button:disabled {
     background: #149174;
     color: #0C5645;
 }

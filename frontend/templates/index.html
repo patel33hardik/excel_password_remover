@@ -11,7 +11,7 @@
         </form>
 
         <script>
-            document.getElementById('FileUploader').addEventListener('click', function () {
+            document.getElementById('FileUploader').addEventListener('change', function () {
                 const file = this.files[0];
                 const file_error =  document.getElementById('fileError');
                 const upload_button = document.getElementById('SubmitButton');
@@ -19,9 +19,11 @@
                 file_error.textContent = '';
                 if (file) {
                     if (!file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                        file_error.style.color = 'red';
                         file_error.textContent = 'Invalid file format. Must be required excel file';
                         upload_button.disabled = true;
                     } else if (file.size > 5 * 1024 * 1024) {
+                        file_error.style.color = 'red';
                         file_error.textContent = 'Make sure file size less than 5 Mb';
                         upload_button.disabled = true;
                     } else {
@@ -32,18 +34,48 @@
                 }
             });
 
+            document.getElementById('SubmitButton').addEventListener('click', function () {
+                const file = document.getElementById('FileUploader').files[0];
+                uploadFile(file);
+            });
+
             function uploadFile(file) {
                 const form_data = new FormData();
                 form_data.append('file', file);
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', '/upload', true);
                 xhr.onload = function () {
+                    const file_error =  document.getElementById('fileError');
+                    file_error.textContent = '';
                     if (xhr.status === 200) {
-                        
-                    } else {
-                        console.error('File upload failed');
+                        const content_type = xhr.getResponseHeader('Content-disposition');
+                        if (content_type && content_type.includes('attachment')) {
+                            const blob = new Blob([xhr.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = file.name;
+                            document.body.appendChild(link);
+                            link.click();
+                            window.URL.revokeObjectURL(url);
+                            file_error.style.color = 'green';
+                            file_error.textContent = 'File password removed successfully.';
+                            return;
+                        }
+                        const response = JSON.parse(xhr.responseText);
+                        if (response) {
+                            file_error.style.color = 'green';
+                            if (response.Result === 'ERROR') {
+                                file_error.style.color = 'red';
+                            }
+                            file_error.textContent = response.Message;
+                            return;
+                        }
                     }
+                    file_error.style.color = 'red';
+                    file_error.textContent = 'File upload failed';
                 }
+                xhr.send(form_data);
             }
 
 
