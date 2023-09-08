@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify
+from ExcelPasswordRemover import removePassword
+
 import os
-from REP import removePassword
+import shutil
+import base64
 
 app = Flask(
     __name__,
@@ -29,15 +32,40 @@ def upload_file():
             'Message': 'File name not found'
         }), 400
 
-    if file:
+    try:
         if not os.path.exists('import'):
             os.makedirs('import')
-
+        if not os.path.exists('export'):
+            os.makedirs('export')
         import_path = os.path.join('import', file.filename)
-        file.save(import_path)
-        export_file = removePassword('import', 'export')
 
-        return send_file(export_file, as_attachment=True)
+        file.save(import_path)
+        export_file, exception = removePassword('import', 'export')
+        if export_file is None and exception != '':
+            return jsonify({
+                'Result': 'ERROR',
+                'Message': exception
+            }), 400
+        # Read the binary content of the Excel file
+        with open(export_file, 'rb') as file:
+            excel_binary = file.read()
+
+        # Encode the binary content as base64
+        excel_base64 = base64.b64encode(excel_binary).decode('utf-8')
+        return jsonify({
+            'Result': 'OK',
+            'Message': 'File password removed successfully.',
+            'Binary': excel_base64,
+            'FileName': os.path.basename(export_file)
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'Result': 'ERROR',
+            'Message': str(e)
+        }), 400
+    finally:
+        shutil.rmtree('import', ignore_errors=True)
+        shutil.rmtree('export', ignore_errors=True)
 
 
 if __name__ == '__main__':

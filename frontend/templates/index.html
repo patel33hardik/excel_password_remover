@@ -11,20 +11,20 @@
         </form>
 
         <script>
+            let g_file_error =  document.getElementById('fileError');
             document.getElementById('FileUploader').addEventListener('change', function () {
                 const file = this.files[0];
-                const file_error =  document.getElementById('fileError');
                 const upload_button = document.getElementById('SubmitButton');
                 document.getElementById('FileName').textContent = file.name;
-                file_error.textContent = '';
+                g_file_error.textContent = '';
                 if (file) {
                     if (!file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-                        file_error.style.color = 'red';
-                        file_error.textContent = 'Invalid file format. Must be required excel file';
+                        g_file_error.style.color = 'red';
+                        g_file_error.textContent = 'Invalid file format. Must be required excel file';
                         upload_button.disabled = true;
                     } else if (file.size > 5 * 1024 * 1024) {
-                        file_error.style.color = 'red';
-                        file_error.textContent = 'Make sure file size less than 5 Mb';
+                        g_file_error.style.color = 'red';
+                        g_file_error.textContent = 'Make sure file size less than 5 Mb';
                         upload_button.disabled = true;
                     } else {
                         upload_button.disabled = false;
@@ -36,7 +36,12 @@
 
             document.getElementById('SubmitButton').addEventListener('click', function () {
                 const file = document.getElementById('FileUploader').files[0];
-                uploadFile(file);
+                if (file) {
+                    uploadFile(file);
+                    return;
+                }
+                g_file_error.style.color = 'red';
+                g_file_error.textContent = 'Please select a file before upload';
             });
 
             function uploadFile(file) {
@@ -45,39 +50,63 @@
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', '/upload', true);
                 xhr.onload = function () {
-                    const file_error =  document.getElementById('fileError');
-                    file_error.textContent = '';
+                    g_file_error.textContent = '';
                     if (xhr.status === 200) {
-                        const content_type = xhr.getResponseHeader('Content-disposition');
-                        if (content_type && content_type.includes('attachment')) {
-                            const blob = new Blob([xhr.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        const response = JSON.parse(xhr.response);
+                        if (response) {
+                            if (!displayValidMessage(response)) {
+                                return;
+                            }
+                            const byteCharacters = atob(response.Binary);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const blob = new Blob([byteArray]);
                             const url = window.URL.createObjectURL(blob);
                             const link = document.createElement('a');
                             link.href = url;
-                            link.download = file.name;
+                            link.download = response.FileName;
                             document.body.appendChild(link);
                             link.click();
                             window.URL.revokeObjectURL(url);
-                            file_error.style.color = 'green';
-                            file_error.textContent = 'File password removed successfully.';
+                            displayValidMessage(response);
                             return;
                         }
-                        const response = JSON.parse(xhr.responseText);
-                        if (response) {
-                            file_error.style.color = 'green';
-                            if (response.Result === 'ERROR') {
-                                file_error.style.color = 'red';
-                            }
-                            file_error.textContent = response.Message;
-                            return;
-                        }
+                        displayValidMessage(response);
+                        return
+                    } else if (xhr.status == 400) {
+                        displayValidMessage(xhr.responseText);
+                        return
                     }
-                    file_error.style.color = 'red';
-                    file_error.textContent = 'File upload failed';
+                    g_file_error.style.color = 'red';
+                    g_file_error.textContent = 'File upload failed';
                 }
                 xhr.send(form_data);
             }
 
+            function displayValidMessage(
+                json_response
+            ) {
+                if (json_response) {
+                    g_file_error.style.color = 'green';
+                    g_file_error.textContent = json_response.Message;
+                    if (json_response.Result === 'ERROR') {
+                        g_file_error.style.color = 'red';
+                        return false;
+                    }
+                    clean();
+                    return true;
+                }
+                g_file_error.style.color = 'red';
+                g_file_error.textContent = 'Invalid json response';
+            }
+
+            function clean() {
+                document.getElementById('FileUploader').value = '';
+                document.getElementById('FileName').textContent = 'Drag your files here or click in this area.';
+            }
 
         </script>
     </body>
