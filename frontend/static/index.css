@@ -56,3 +56,11 @@ form button:disabled {
 form button:active {
     border: 0;
 }
+
+.title {
+    color: #149174;
+    font: inherit;
+    font-size: 40px;
+    display: flex;
+    justify-content: center;
+}
