@@ -111,5 +111,9 @@ def removePassword(pyimport, pyexport):
     except Exception as ex:
         message = 'Exception raised: {}'.format(ex)
         traceback.print_exc()
+        cleanupTemp(reppytemp)
         printRed(message)
         return None, message
+
+if __name__ == '__main__':
+    removePassword('import', 'export')

@@ -1,6 +1,23 @@
 <html>
     <head>
         <link rel="stylesheet" href="/frontend/static/index.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Excel file password remover tool">
+        <meta name="keywords" content="Excel, password remover, tool, upload">
+        <meta name="author" content="Your Name">
+        <meta name="robots" content="index, follow">
+        <meta property="og:title" content="Excel Password Remover">
+        <meta property="og:description" content="Remove password protection from Excel files with ease.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://patel33hardik.pythonanywhere.com/">
+        <meta property="og:image" content="https://patel33hardik.pythonanywhere.com/">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@yourtwitterhandle">
+        <meta name="twitter:title" content="Excel Password Remover">
+        <meta name="twitter:description" content="Remove password protection from Excel files with ease.">
+        <meta name="twitter:image" content="https://patel33hardik.pythonanywhere.com/">
+        <title>Excel file password remover</title>
     </head>
     <body>
         <div class="title">
@@ -80,7 +97,7 @@
                         displayValidMessage(response);
                         return
                     } else if (xhr.status == 400) {
-                        displayValidMessage(xhr.responseText);
+                        displayValidMessage(JSON.parse(xhr.responseText));
                         return
                     }
                     g_file_error.style.color = 'red';
