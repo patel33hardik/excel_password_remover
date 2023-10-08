@@ -12,6 +12,17 @@ app = Flask(
     static_folder='frontend/static'
 )
 
+# Define a function to add the necessary CORS headers to responses
+def add_cors_headers(response):
+    # Replace '*' with the specific domain of your React app if needed
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+    return response
+
+# Register the CORS headers function as a after_request handler
+app.after_request(add_cors_headers)
+
 @app.route('/')
 def hello_world():
     return render_template('index.html')
