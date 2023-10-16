@@ -1,5 +1,6 @@
 body {
     background: rgba(0, 0, 0, 0.9);
+    font-family: Arial;
 }
 
 form {
@@ -63,4 +64,37 @@ form button:active {
     font-size: 40px;
     display: flex;
     justify-content: center;
+    margin-top: 25px;
+}
+
+/* Menu CSS */
+
+nav {
+    background-color: #333; /* Background color of the menu bar */
+    padding: 10px;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu li {
+    display: inline;
+    margin-right: 20px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: white; /* Text color of the menu items */
+    padding: 5px 10px; /* Add padding to create a clickable area */
+    border: 2px solid transparent; /* Initially, set the border to transparent */
+}
+
+.menu li a:hover {
+    background-color: #168770; /* Background color on hover */
+}
+
+.menu li a.active {
+    border-color: #16a085; /* Border color for the active menu item */
 }
