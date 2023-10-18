@@ -36,6 +36,7 @@
             <span id="fileError" style="color: red;"></span><br>
         </form>
 
+        <script type="text/javascript" src="/frontend/static/app.js"></script>
         <script>
             let g_file_error =  document.getElementById('fileError');
             document.getElementById('FileUploader').addEventListener('change', function () {
@@ -133,21 +134,6 @@
                 document.getElementById('FileUploader').value = '';
                 document.getElementById('FileName').textContent = 'Drag your files here or click in this area.';
             }
-
-            // JavaScript to toggle the "active" class
-            const menuItems = document.querySelectorAll('.menu-item');
-
-            menuItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    // Remove "active" class from all menu items
-                    menuItems.forEach(otherItem => {
-                        otherItem.classList.remove('active');
-                    });
-
-                    // Add "active" class to the clicked menu item
-                    item.classList.add('active');
-                });
-            });
 
         </script>
     </body>
