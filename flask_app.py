@@ -27,6 +27,10 @@ app.after_request(add_cors_headers)
 def hello_world():
     return render_template('index.html')
 
+@app.route('/extract_resume')
+def extract_resume():
+    return render_template('resume_extractor.html')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
