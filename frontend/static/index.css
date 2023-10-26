@@ -7,7 +7,7 @@ form {
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-top: -100px;
+    margin-top: 0px;
     margin-left: -250px;
     width: 500px;
     height: 200px;
@@ -65,6 +65,36 @@ form button:active {
     display: flex;
     justify-content: center;
     margin-top: 25px;
+}
+
+.form-border {
+    text-align: center;
+    padding: 20px 0px 20px 0px;
+    border: 4px dashed #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 500px;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    margin-left: -250px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: white;
+}
+
+input[type="text"] {
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #ccc;
 }
 
 /* Menu CSS */
