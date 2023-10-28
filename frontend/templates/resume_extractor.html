@@ -36,14 +36,58 @@
             </div>
         </div>
         <form>
-            <input type="file" id="FileUploader">
+            <input type="file" id="FileUploader" multiple>
             <p id="FileName">Drag your PDF resumes file here or click in this area.</p><br>
-            <button type="button" id="SubmitButton" disabled>Upload</button>
+            <button type="button" id="SubmitButton" disabled>Upload and Extract</button>
             <span id="fileError" style="color: red;"></span><br>
         </form>
 
         <script type="text/javascript" src="/frontend/static/app.js"></script>
         <script>
+
+            let g_file_error = document.getElementById('fileError');
+            document.getElementById('FileUploader').addEventListener('change', function () {
+                const files = this.files;
+                const upload_button = document.getElementById('SubmitButton');
+                const content_info = document.getElementById('FileName');
+                if (files.length > 10) {
+                    upload_button.disabled = true;
+                    g_file_error.textContent = 'Maximum 15 files can be selected.';
+                    return false;
+                }
+
+                if (files.length > 0) {
+                    let isValid = true;
+                    let file_names = '';
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        if (!file.type.includes('application/pdf')) {
+                            g_file_error.style.color = 'red';
+                            g_file_error.textContent = 'Invalid file format. Must be a PDF file';
+                            isValid = false;
+                            break;
+                        } else if (file.size > 5 * 1024 * 1024) {
+                            g_file_error.style.color = 'red';
+                            g_file_error.textContent = 'Make sure file size is less than 5 MB';
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid) {
+                        g_file_error.textContent = '';
+                        upload_button.disabled = false;
+                        content_info.textContent = `Total ${files.length} file(s) selected`;
+                    } else {
+                        upload_button.disabled = true;
+                    }
+                } else {
+                    upload_button.disabled = true;
+                    g_file_error.textContent = '';
+                    content_info.textContent = 'Drag your PDF resumes file here or click in this area.';
+                }
+            });
+
         </script>
     </body>
 </html>
