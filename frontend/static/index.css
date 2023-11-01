@@ -67,7 +67,8 @@ form button:active {
     margin-top: 25px;
 }
 
-.form-border {
+.form-border,
+.output-order {
     text-align: center;
     padding: 20px 0px 20px 0px;
     border: 4px dashed #fff;
@@ -75,7 +76,8 @@ form button:active {
     width: 500px;
 }
 
-.form-container {
+.form-container,
+.output-container {
     display: flex;
     justify-content: center;
     margin-top: 10px;
@@ -83,6 +85,11 @@ form button:active {
     top: 25%;
     left: 50%;
     margin-left: -250px;
+}
+
+.output-container {
+    top: 94%;
+    height: auto;
 }
 
 label {

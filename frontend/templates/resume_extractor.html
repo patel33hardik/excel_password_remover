@@ -39,20 +39,24 @@
             <input type="file" id="FileUploader" multiple>
             <p id="FileName">Drag your PDF resumes file here or click in this area.</p><br>
             <button type="button" id="SubmitButton" disabled>Upload and Extract</button>
-            <span id="fileError" style="color: red;"></span><br>
         </form>
+        <div class="output-container">
+            <div class="form-border">
+                <label id="OutputWindow" style="color: red;"></label>
+            </div>
+        </div>
 
         <script type="text/javascript" src="/frontend/static/app.js"></script>
         <script>
 
-            let g_file_error = document.getElementById('fileError');
+            let g_output = document.getElementById('OutputWindow');
             document.getElementById('FileUploader').addEventListener('change', function () {
                 const files = this.files;
                 const upload_button = document.getElementById('SubmitButton');
                 const content_info = document.getElementById('FileName');
                 if (files.length > 10) {
                     upload_button.disabled = true;
-                    g_file_error.textContent = 'Maximum 15 files can be selected.';
+                    g_output.textContent = 'Maximum 10 files can be selected.';
                     return false;
                 }
 
@@ -62,20 +66,20 @@
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
                         if (!file.type.includes('application/pdf')) {
-                            g_file_error.style.color = 'red';
-                            g_file_error.textContent = 'Invalid file format. Must be a PDF file';
+                            g_output.style.color = 'red';
+                            g_output.textContent = 'Invalid file format. Must be a PDF file';
                             isValid = false;
                             break;
                         } else if (file.size > 5 * 1024 * 1024) {
-                            g_file_error.style.color = 'red';
-                            g_file_error.textContent = 'Make sure file size is less than 5 MB';
+                            g_output.style.color = 'red';
+                            g_output.textContent = 'Make sure file size is less than 5 MB';
                             isValid = false;
                             break;
                         }
                     }
 
                     if (isValid) {
-                        g_file_error.textContent = '';
+                        g_output.textContent = '';
                         upload_button.disabled = false;
                         content_info.textContent = `Total ${files.length} file(s) selected`;
                     } else {
@@ -83,10 +87,67 @@
                     }
                 } else {
                     upload_button.disabled = true;
-                    g_file_error.textContent = '';
+                    g_output.textContent = '';
                     content_info.textContent = 'Drag your PDF resumes file here or click in this area.';
                 }
             });
+
+            document.getElementById('SubmitButton').addEventListener('click', function () {
+                const files = document.getElementById('FileUploader').files;
+                if (files.length > 0) {
+                    uploadFiles(files);
+                    return;
+                }
+                g_output.style.color = 'red';
+                g_output.textContent = 'Please select a file before upload';
+            });
+
+            function uploadFiles(files) {
+                const form_data = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    form_data.append('files[]', files[i]);
+                }
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload_resumes', true);
+                xhr.onload = function () {
+                    g_output.textContent = '';
+                    const response = JSON.parse(xhr.response);
+                    if (xhr.status === 200) {
+                        displayValidMessage(response);
+                        return;
+                    } else if (xhr.status === 400) {
+                        displayValidMessage(JSON.parse(xhr.responseText));
+                        return;
+                    }
+                    g_output.style.color = 'red';
+                    g_output.textContent = 'File upload failed';
+                };
+                xhr.send(form_data);
+            }
+
+            function displayValidMessage(
+                json_response
+            ) {
+                if (json_response) {
+                    g_output.style.color = 'green';
+                    g_output.textContent = json_response.Message;
+                    if (json_response.Result === 'ERROR') {
+                        g_output.style.color = 'red';
+                        return false;
+                    }
+                    clean();
+                    return true;
+                }
+                g_output.style.color = 'red';
+                g_output.textContent = 'Invalid json response';
+            }
+
+            function clean() {
+                document.getElementById('FileUploader').value = '';
+                document.getElementById('SubmitButton').disabled = true;
+                document.getElementById('FileName').textContent = 'Drag your PDF resumes file here or click in this area.';
+            }
 
         </script>
     </body>
