@@ -4,6 +4,8 @@ from ExcelPasswordRemover import removePassword
 import os
 import shutil
 import base64
+import tempfile
+
 
 app = Flask(
     __name__,
@@ -81,6 +83,37 @@ def upload_file():
     finally:
         shutil.rmtree('import', ignore_errors=True)
         shutil.rmtree('export', ignore_errors=True)
+
+
+@app.route('/upload_resumes', methods=['POST'])
+def upload_resumes():
+    try:
+        files = request.files.getlist('files[]')
+
+        if not files:
+            return jsonify({
+                'Result': 'ERROR',
+                'Message': 'No files provided'
+            }), 400
+
+        # Create a unique temporary folder
+        app_dir = os.path.dirname(__file__)
+        temp_folder = tempfile.mkdtemp(dir=app_dir)
+
+        # Save each file to the temporary folder
+        for file in files:
+            filename = os.path.join(temp_folder, file.filename)
+            file.save(filename)
+
+        return jsonify({
+            'Result': 'OK',
+            'Message': 'Files uploaded successfully'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'Result': 'ERROR',
+            'Message': str(e)
+        }), 400
 
 
 if __name__ == '__main__':
