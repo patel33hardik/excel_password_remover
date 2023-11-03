@@ -89,6 +89,7 @@ def upload_file():
 def upload_resumes():
     try:
         files = request.files.getlist('files[]')
+        keywords = request.form.get('keywords')
 
         if not files:
             return jsonify({

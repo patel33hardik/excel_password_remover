@@ -78,6 +78,14 @@
                         }
                     }
 
+                    const keywords_input = document.getElementById('Keywords');
+                    const pattern = /^([a-zA-Z]+,)*[a-zA-Z]+$/;
+                    if (!pattern.test(keywords_input.value)) {
+                        g_output.textContent = 'Invalid keyword response. It should be like "python,js,css"';
+                        isValid = false;
+                        keywords_input.focus();
+                    }
+
                     if (isValid) {
                         g_output.textContent = '';
                         upload_button.disabled = false;
@@ -104,6 +112,7 @@
 
             function uploadFiles(files) {
                 const form_data = new FormData();
+                form_data.append('keywords', document.getElementById('Keywords').value)
                 for (let i = 0; i < files.length; i++) {
                     form_data.append('files[]', files[i]);
                 }
