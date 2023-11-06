@@ -31,7 +31,7 @@
         </div>
         <div class="form-container">
             <div class="form-border">
-                <label for="Keywords">Enter keywords: e.x. "python, js, javascript, html, css"</label>
+                <label for="Keywords">Enter keywords: e.x. "python,js,javascript,html,css"</label>
                 <input type="text" id="Keywords">
             </div>
         </div>
@@ -41,7 +41,7 @@
             <button type="button" id="SubmitButton" disabled>Upload and Extract</button>
         </form>
         <div class="output-container">
-            <div class="form-border">
+            <div class="output-border">
                 <label id="OutputWindow" style="color: red;"></label>
             </div>
         </div>
@@ -124,6 +124,11 @@
                     const response = JSON.parse(xhr.response);
                     if (xhr.status === 200) {
                         displayValidMessage(response);
+                        if (response.Result === 'ERROR') {
+                            displayValidMessage(response);
+                            return;
+                        }
+                        displayShortlistedResumes(response.ShortListed, response.NoMatch)
                         return;
                     } else if (xhr.status === 400) {
                         displayValidMessage(JSON.parse(xhr.responseText));
@@ -156,6 +161,32 @@
                 document.getElementById('FileUploader').value = '';
                 document.getElementById('SubmitButton').disabled = true;
                 document.getElementById('FileName').textContent = 'Drag your PDF resumes file here or click in this area.';
+            }
+
+            function displayShortlistedResumes(
+                shortListedResumes,
+                noMatch
+            ) {
+                let shortlistedHTML = '';
+                let no_match_html = '';
+                if (shortListedResumes.length > 0) {
+                    shortlistedHTML = `
+                        <div class="resume-shortlist">${shortListedResumes.map((resume, index) =>
+                            `<p>${index + 1}. ${resume.FileName},<br> Matching keywords: ${resume.MatchKeywords}<br></p>`
+                        ).join('')}</div>`;
+                }
+                if (noMatch.length > 0) {
+                    no_match_html = `
+                        <div class="resume-no-match">${noMatch.map((resume, index) =>
+                        `<p>${index + 1}. ${resume.FileName}<br></p>`
+                    ).join('')}</div>`;
+                }
+                g_output.innerHTML = `
+                    <p style="color:white;"><strong>Following are resumes with match keywords.</strong></p>
+                    ${shortlistedHTML} <br/>
+                    <p style="color:white;"><strong>Following are with no match keywords.</strong></p>
+                    ${no_match_html}
+                `;
             }
 
         </script>

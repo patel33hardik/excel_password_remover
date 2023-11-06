@@ -38,4 +38,8 @@ def extract_resumes(files_path, keywords):
                         'MatchKeywords': 'No match found'
                     })
 
+    shortlisted_resumes = sorted(
+        shortlisted_resumes, key=lambda x: len(x['MatchKeywords']), reverse=True
+    )
+
     return shortlisted_resumes, no_match_resumes

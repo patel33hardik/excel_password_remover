@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from ExcelPasswordRemover import removePassword
+from ResumeExtractor import extract_resumes
 
 import os
 import shutil
@@ -106,9 +107,15 @@ def upload_resumes():
             filename = os.path.join(temp_folder, file.filename)
             file.save(filename)
 
+        keyword_list = keywords.split(',')
+        shortlisted_resumes, no_match_resumes = extract_resumes(temp_folder, keyword_list)
+        shutil.rmtree(temp_folder)
+
         return jsonify({
             'Result': 'OK',
-            'Message': 'Files uploaded successfully'
+            'Message': 'Resume files extracted successfully.',
+            'ShortListed': shortlisted_resumes,
+            'NoMatch': no_match_resumes
         }), 200
     except Exception as e:
         return jsonify({
