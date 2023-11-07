@@ -109,7 +109,7 @@ def upload_resumes():
             filename = os.path.join(temp_folder, file.filename)
             file.save(filename)
 
-        keyword_list = keywords.split(',')
+        keyword_list = [keyword.strip() for keyword in keywords.split(',')]
         shortlisted_resumes, no_match_resumes = extract_resumes(temp_folder, keyword_list)
         shutil.rmtree(temp_folder)
 

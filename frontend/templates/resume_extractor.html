@@ -79,7 +79,7 @@
                     }
 
                     const keywords_input = document.getElementById('Keywords');
-                    const pattern = /^([a-zA-Z]+,)*[a-zA-Z]+$/;
+                    const pattern = /^([a-zA-Z]+\s*,\s*)*[a-zA-Z]+$/;
                     if (!pattern.test(keywords_input.value)) {
                         g_output.textContent = 'Invalid keyword response. It should be like "python,js,css"';
                         isValid = false;
@@ -108,9 +108,12 @@
                 }
                 g_output.style.color = 'red';
                 g_output.textContent = 'Please select a file before upload';
+                upload_button.disabled = false;
             });
 
             function uploadFiles(files) {
+                const upload_button = document.getElementById('SubmitButton');
+                upload_button.disabled = true;
                 const form_data = new FormData();
                 form_data.append('keywords', document.getElementById('Keywords').value)
                 for (let i = 0; i < files.length; i++) {
@@ -122,6 +125,7 @@
                 xhr.onload = function () {
                     g_output.textContent = '';
                     const response = JSON.parse(xhr.response);
+                    upload_button.disabled = false;
                     if (xhr.status === 200) {
                         displayValidMessage(response);
                         if (response.Result === 'ERROR') {

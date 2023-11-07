@@ -6,8 +6,9 @@ def search_keywords(text, keywords):
     match_keys = []
     for keyword in keywords:
         pattern = r'\b{}(?:,)?\b'.format(keyword.lower())
-        if re.search(pattern, text.lower(), re.IGNORECASE):
-            match_keys.append(keyword)
+        matches = re.findall(pattern, text.lower(), re.IGNORECASE)
+        if len(matches) > 0:
+            match_keys.append(f'{keyword} ({len(matches)})')
 
     return match_keys
 
