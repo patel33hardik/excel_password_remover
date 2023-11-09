@@ -1,3 +1,5 @@
+from fastapi import FastAPI
+from fastapi.middleware.wsgi import WSGIMiddleware
 from flask import Flask, render_template, request, jsonify
 from ExcelPasswordRemover import removePassword
 from ResumeExtractor import extract_resumes
