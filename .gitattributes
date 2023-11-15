@@ -1,0 +1,5 @@
+*.py linguist-language=Python
+*.flask linguist-language=Flask
+*.html linguist-language=Python
+*.css linguist-language=CSS
+*.js linguist-language=JavaScript
